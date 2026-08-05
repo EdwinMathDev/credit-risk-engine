@@ -231,3 +231,8 @@ models/*.joblib
 # Ignore logs and temporary files
 *.log
 *.tmp
+
+
+# .gitignore
+models/artifacts/*.joblib
+models/artifacts/*.pkl
