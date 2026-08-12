@@ -1,0 +1,19 @@
+{
+  "model": {
+    "active_model_path": "models/artifacts/logreg_baseline.joblib",
+    "encoder_path": "models/artifacts/encoder.joblib",
+    "scaler_path": "models/artifacts/scaler.joblib"
+  },
+  "decision_threshold": {
+    "value": 0.440,
+    "selection_method": "cost_optimal",
+    "chosen_on": "2026-08-11",
+    "notes": "Reemplaza este valor y 'chosen_on' cada vez que se re-optimice el threshold. Debe ser leido tanto por evaluacion/entrenamiento como por la API en produccion — nunca hardcodear 0.5 en otro lugar del repo."
+  },
+  "business_cost_assumptions": {
+    "false_negative_cost": 5.0,
+    "false_positive_cost": 1.0,
+    "notes": "Placeholder. Reemplazar con costos reales estimados por el negocio (perdida promedio por default no detectado vs. margen perdido por rechazo erroneo) en cuanto esten disponibles."
+  },
+  "target_column": "default payment_next_month"
+}
