@@ -1,20 +1,52 @@
-# ============================================================
-# Final data preparation pipeline for modeling (step 3)
-# src/models/train_pipeline.py
-#
-# Correct order:
-#   1. Load data/features/credit_card_features.csv
-#      (output of build_features.py — ratios already computed,
-#       categoricals still UNENCODED, nothing scaled)
-#   2. Stratified train_test_split (before any fit)
-#   3. Categorical encoding — fit on train only
-#   4. log1p on PAY_AMT (deterministic transform, no fit required)
-#   5. StandardScaler — fit on train only
-#   6. SMOTE — train only
-#   7. Save X_train/X_test/y_train/y_test + encoder/scaler
-#      (the encoder and scaler are saved because the API will
-#       need them to transform new incoming requests)
-# ============================================================
+"""
+train_pipeline.py
+==================
+
+Stage 3/3 of the data preparation pipeline — Credit Risk Engine.
+
+Responsibility
+--------------
+Builds the final training and test splits for modeling, applying
+categorical encoding, skewed-variable transformation, scaling, and
+class balancing.
+
+All stateful transformations (encoder, scaler, SMOTE) are fitted
+exclusively on the training split and applied (transform only) to
+the test split, preventing data leakage between train and test —
+a non-negotiable requirement for a credit risk model that will be
+audited and eventually monitored in production.
+
+Pipeline position
+------------------
+    raw data -> preprocess.py -> build_features.py -> [train_pipeline.py] -> modeling
+
+Transformation sequence
+------------------------
+    1. Load data/features/credit_card_features.csv
+    2. Stratified train_test_split on the target variable
+    3. One-hot encoding of categorical variables (fit on train)
+    4. log1p transform of skewed monetary variables (PAY_AMT*)
+    5. Imputation of any remaining missing values (train median)
+    6. Standardization of numeric variables (fit on train)
+    7. Minority-class oversampling with SMOTE (train only)
+
+Input
+-----
+    data/features/credit_card_features.csv
+
+Output
+------
+    data/features/train_final.csv
+    data/features/test_final.csv
+    models/artifacts/encoder.joblib
+    models/artifacts/scaler.joblib
+
+Notes
+-----
+The encoder and scaler are persisted to disk because the inference
+service (src/api) must apply the exact same transformations, fitted
+on the same training data, to any new incoming request.
+"""
 
 import os
 import logging
@@ -28,7 +60,7 @@ from imblearn.over_sampling import SMOTE
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 TARGET_COL = "default payment_next_month"
-CATEGORICAL_COLS = ["SEX", "EDUCATION", "MARRIAGE", "age_group"]
+CATEGORICAL_COLS = ["EDUCATION", "MARRIAGE", "age_group"]  # SEX removida — ver FAIRNESS.md
 
 FEATURES_DIR = "data/features"
 ARTIFACTS_DIR = "models/artifacts"

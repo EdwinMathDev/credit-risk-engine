@@ -21,7 +21,7 @@ that training-time and inference-time decisions never drift apart.
 import json
 import os
 
-CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config", "model_config.json")
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "model_config.json")
 
 
 def load_config(path: str = CONFIG_PATH) -> dict:

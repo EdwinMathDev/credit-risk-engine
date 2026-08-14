@@ -1,10 +1,34 @@
-# ============================================================
-# Feature engineering module (pipeline step 2)
-# src/features/build_features.py
-#
-# Always runs on cleaned but UNSCALED data, so that the
-# financial ratios keep their real-world meaning.
-# ============================================================
+"""
+build_features.py
+==================
+
+Stage 2/3 of the data preparation pipeline — Credit Risk Engine.
+
+Responsibility
+--------------
+Builds domain-specific features from the six-month billing and
+payment history: credit utilization ratios, payment ratios,
+month-over-month trends, billing/payment volatility, delinquency
+history, and overall payment capacity.
+
+These features are always computed on cleaned but UNSCALED data
+(see preprocess.py), so that they retain a direct financial
+interpretation. Encoding, scaling, and class balancing are applied
+in a later stage (train_pipeline.py) to avoid information leakage
+between the train and test splits.
+
+Pipeline position
+------------------
+    raw data -> preprocess.py -> [build_features.py] -> train_pipeline.py
+
+Input
+-----
+    data/processed/credit_card_default_clean.csv
+
+Output
+------
+    data/features/credit_card_features.csv
+"""
 
 import logging
 import pandas as pd
@@ -14,12 +38,13 @@ from src.data.load_data import load_raw_data, save_processed_data
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 BASE_COLUMNS = [
-    "LIMIT_BAL", "SEX", "EDUCATION", "MARRIAGE", "AGE",
+    "LIMIT_BAL", "EDUCATION", "MARRIAGE", "AGE",
     "PAY_0", "PAY_2", "PAY_3", "PAY_4", "PAY_5", "PAY_6",
     "BILL_AMT1", "BILL_AMT2", "BILL_AMT3", "BILL_AMT4", "BILL_AMT5", "BILL_AMT6",
     "PAY_AMT1", "PAY_AMT2", "PAY_AMT3", "PAY_AMT4", "PAY_AMT5", "PAY_AMT6",
     "default payment_next_month"
 ]
+# SEX removida — ver FAIRNESS.md para el detalle del hallazgo y la decisión.
 
 PAY_DELAY_COLS = ["PAY_0", "PAY_2", "PAY_3", "PAY_4", "PAY_5", "PAY_6"]
 

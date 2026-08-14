@@ -53,7 +53,7 @@ from sklearn.metrics import roc_auc_score
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 TARGET_COL = "default payment_next_month"
-CATEGORICAL_COLS = ["SEX", "EDUCATION", "MARRIAGE", "age_group"]
+CATEGORICAL_COLS = ["EDUCATION", "MARRIAGE", "age_group"]  # SEX removida — ver FAIRNESS.md
 FEATURES_DIR = "data/features"
 ARTIFACTS_DIR = "models/artifacts"
 N_FOLDS = 5

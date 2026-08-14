@@ -1,13 +1,36 @@
-# ============================================================
-# Data CLEANING module (pipeline step 1)
-# src/data/preprocess.py
-#
-# IMPORTANT: this module no longer scales, encodes, or balances
-# the data. Those steps were moved to later stages of the pipeline
-# (after feature engineering and AFTER the train/test split)
-# to avoid data leakage and so that the financial ratios in
-# build_features.py are calculated on real, unscaled values.
-# ============================================================
+"""
+preprocess.py
+=============
+
+Stage 1/3 of the data preparation pipeline — Credit Risk Engine.
+
+Responsibility
+--------------
+Performs data cleaning exclusively: missing-value imputation,
+correction of undocumented category codes, and explicit dtype
+casting for categorical features.
+
+This module intentionally does NOT perform encoding, scaling, or
+class balancing. Those transformations depend on statistics fitted
+on the data (means, standard deviations, class distribution) and are
+therefore deferred to train_pipeline.py, where they are fitted
+exclusively on the training split. Keeping cleaning separate from
+scaling also ensures that the financial ratios computed in
+build_features.py are built on values in their original unit
+(dollars/NTD), not on already-transformed variables.
+
+Pipeline position
+------------------
+    raw data -> [preprocess.py] -> build_features.py -> train_pipeline.py
+
+Input
+-----
+    data/raw/credit_card_default.csv
+
+Output
+------
+    data/processed/credit_card_default_clean.csv
+"""
 
 import logging
 import pandas as pd
@@ -19,7 +42,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 TARGET_COL = "default payment_next_month"
 
 # Columnas categóricas conocidas del dataset (códigos numéricos, no strings)
-CATEGORICAL_COLS = ["SEX", "EDUCATION", "MARRIAGE"]
+# SEX fue removida del pipeline: el analisis de SHAP mostro que el modelo
+# la usaba como señal directa de riesgo (ver FAIRNESS.md), y un ablation
+# test confirmo que no aporta poder predictivo real (delta AUC = 0.0011).
+CATEGORICAL_COLS = ["EDUCATION", "MARRIAGE"]
 
 
 # ------------------------------------------------------------
@@ -65,7 +91,7 @@ def clean_invalid_categories(df: pd.DataFrame) -> pd.DataFrame:
 # ------------------------------------------------------------
 def cast_categorical_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Convierte SEX/EDUCATION/MARRIAGE a dtype 'category'.
+    Convierte EDUCATION/MARRIAGE a dtype 'category'.
     Esto es clave para que el encoder posterior las detecte
     explícitamente en vez de depender de select_dtypes(include='object'),
     que con estas columnas (ya enteras) no detecta nada.
