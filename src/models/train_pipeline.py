@@ -127,7 +127,9 @@ def scale_numeric(X_train, X_test):
 
 def impute_remaining_na(X_train, X_test):
     """Los NaN/inf que pudo generar build_features.py se resuelven aquí,
-    con la mediana calculada SOLO en train."""
+    con la mediana calculada SOLO en train. Las medianas se devuelven
+    para poder persistirlas — la API necesita el mismo valor exacto
+    para transformar solicitudes nuevas de la misma forma."""
     medians = X_train.median(numeric_only=True)
     n_train_na = X_train.isna().sum().sum()
     n_test_na = X_test.isna().sum().sum()
@@ -135,7 +137,7 @@ def impute_remaining_na(X_train, X_test):
     X_test = X_test.fillna(medians)
     if n_train_na or n_test_na:
         logging.info(f"NaNs imputados con mediana de train — train: {n_train_na}, test: {n_test_na}")
-    return X_train, X_test
+    return X_train, X_test, medians
 
 
 def balance_train_only(X_train, y_train, random_state: int = 42):
@@ -153,7 +155,7 @@ def run_pipeline():
 
     X_train, X_test, encoder = encode_categoricals(X_train, X_test)
     X_train, X_test = transform_skewed(X_train, X_test)
-    X_train, X_test = impute_remaining_na(X_train, X_test)
+    X_train, X_test, medians = impute_remaining_na(X_train, X_test)
     X_train, X_test, scaler = scale_numeric(X_train, X_test)
 
     X_train_bal, y_train_bal = balance_train_only(X_train, y_train)
@@ -167,11 +169,15 @@ def run_pipeline():
     )
 
     # Guardar artefactos — la API los necesita para transformar requests nuevos
+    # de la misma forma exacta en que se transformó el set de entrenamiento.
     joblib.dump(encoder, os.path.join(ARTIFACTS_DIR, "encoder.joblib"))
     joblib.dump(scaler, os.path.join(ARTIFACTS_DIR, "scaler.joblib"))
+    joblib.dump(medians, os.path.join(ARTIFACTS_DIR, "impute_medians.joblib"))
+    joblib.dump(list(X_train_bal.columns), os.path.join(ARTIFACTS_DIR, "feature_columns.joblib"))
 
     logging.info("Pipeline de preparación para modelado completado.")
-    logging.info(f"Artefactos guardados en {ARTIFACTS_DIR}/ (encoder.joblib, scaler.joblib)")
+    logging.info(f"Artefactos guardados en {ARTIFACTS_DIR}/ "
+                 f"(encoder.joblib, scaler.joblib, impute_medians.joblib, feature_columns.joblib)")
     return X_train_bal, X_test, y_train_bal, y_test
 
 
