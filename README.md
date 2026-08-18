@@ -29,7 +29,7 @@ lightweight dashboard.
 
 ## Why XGBoost, and not just "the model that scored highest"
 
-A Logistic Regression baseline was trained first, deliberately — in
+A Logistic Regression baseline was trained first, deliberately  in
 consumer lending, an interpretable linear model is the right starting
 point, not an afterthought. XGBoost was only adopted after it beat the
 baseline consistently across 5-fold cross-validation (a gain in 4 of 5
@@ -45,14 +45,14 @@ arbitrary default of 0.5.
 | False negatives (missed defaults) | 440 | 255 |
 
 The gain was judged against the baseline's own fold-to-fold variance,
-not against zero — a improvement smaller than a model's natural noise
+not against zero  a improvement smaller than a model's natural noise
 is not an improvement.
 
 ## A finding worth stating plainly
 
 SHAP analysis of the trained model showed `SEX` ranking 6th of 19
 features by importance, with a consistent, systematic effect on
-predicted risk — not statistical noise. An ablation test confirmed
+predicted risk  not statistical noise. An ablation test confirmed
 what that implies: removing it cost 0.0011 AUC, roughly fifteen times
 smaller than the margin that justified choosing XGBoost over the
 baseline in the first place. There was no predictive case for keeping
@@ -98,8 +98,8 @@ src/api (FastAPI)   ◄───────────────────
 dashboard (Streamlit)
 ```
 
-Every stage that fits something to data — the encoder, the scaler,
-the imputation medians, SMOTE — is fit exclusively on the training
+Every stage that fits something to data  the encoder, the scaler,
+the imputation medians, SMOTE  is fit exclusively on the training
 split and persisted as an artifact, so that a prediction served by the
 API is transformed identically to how the model was trained. See the
 module-level docstring in each file under `src/` for the specific
@@ -180,14 +180,14 @@ python -m pytest -v
 ## A note on scope
 
 `AGE` remains in the model. Age is treated differently from sex under
-most lending fairness frameworks — permitted with restrictions rather
-than prohibited outright — but that determination was not made here
+most lending fairness frameworks  permitted with restrictions rather
+than prohibited outright  but that determination was not made here
 with actual legal guidance, only noted as a follow-up in
 `FAIRNESS.md`. It should not be read as a closed question.
 
 ---
 
 *Built iteratively, resumed after a months-long pause, and re-audited
-along the way — which is, if anything, a more faithful account of how
+along the way  which is, if anything, a more faithful account of how
 real projects get built than a repository that only shows the final
 state.*
