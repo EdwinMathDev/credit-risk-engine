@@ -13,7 +13,7 @@ validates types and ranges before any of this data reaches the
 model pipeline.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ApplicantData(BaseModel):
@@ -43,17 +43,16 @@ class ApplicantData(BaseModel):
     PAY_AMT5: float = Field(..., ge=0)
     PAY_AMT6: float = Field(..., ge=0)
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "LIMIT_BAL": 200000, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 34,
-                "PAY_0": 0, "PAY_2": 0, "PAY_3": 0, "PAY_4": 0, "PAY_5": 0, "PAY_6": 0,
-                "BILL_AMT1": 50000, "BILL_AMT2": 48000, "BILL_AMT3": 45000,
-                "BILL_AMT4": 42000, "BILL_AMT5": 40000, "BILL_AMT6": 38000,
-                "PAY_AMT1": 3000, "PAY_AMT2": 3000, "PAY_AMT3": 3000,
-                "PAY_AMT4": 3000, "PAY_AMT5": 3000, "PAY_AMT6": 3000,
-            }
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "LIMIT_BAL": 200000, "EDUCATION": 2, "MARRIAGE": 1, "AGE": 34,
+            "PAY_0": 0, "PAY_2": 0, "PAY_3": 0, "PAY_4": 0, "PAY_5": 0, "PAY_6": 0,
+            "BILL_AMT1": 50000, "BILL_AMT2": 48000, "BILL_AMT3": 45000,
+            "BILL_AMT4": 42000, "BILL_AMT5": 40000, "BILL_AMT6": 38000,
+            "PAY_AMT1": 3000, "PAY_AMT2": 3000, "PAY_AMT3": 3000,
+            "PAY_AMT4": 3000, "PAY_AMT5": 3000, "PAY_AMT6": 3000,
         }
+    })
 
 
 class TopFactor(BaseModel):
