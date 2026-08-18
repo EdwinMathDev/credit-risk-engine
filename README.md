@@ -4,7 +4,7 @@ A credit-default scoring system built around a simple premise: a model
 is not finished when it achieves a good AUC. It is finished when its
 predictions are reproducible, its decisions are explainable, its
 threshold reflects the economics of the business it serves, and its
-use of applicant data has been examined — not merely assumed — to be
+use of applicant data has been examined  not merely assumed  to be
 fair.
 
 This repository documents that process end to end, including the
