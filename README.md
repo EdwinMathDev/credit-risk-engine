@@ -19,13 +19,16 @@ default on payment in the following month, trained on the UCI *Default
 of Credit Card Clients* dataset, and served through an API and a
 lightweight dashboard.
 
-| | |
+| Metric / Feature | Value / Details |
 |---|---|
 | **Active model** | XGBoost (gradient-boosted trees) |
 | **AUC-ROC** | 0.768 |
 | **KS statistic** | 0.402 |
 | **Decision threshold** | 0.25 (cost-optimal, not the default 0.5) |
 | **Fairness** | Audited with SHAP; sex excluded from the model |
+
+
+
 
 ## Why XGBoost, and not just "the model that scored highest"
 
