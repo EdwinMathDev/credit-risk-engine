@@ -40,7 +40,7 @@ folds, not just a better average), and after both models were compared
 at *their own* cost-optimal decision threshold rather than the
 arbitrary default of 0.5.
 
-| | Logistic Regression | XGBoost |
+| Metric | Logistic Regression | XGBoost |
 |---|---|---|
 | Decision threshold | 0.44 | 0.25 |
 | AUC-ROC | 0.752 | 0.768 |
